@@ -70,8 +70,7 @@ func TestSimple(t *testing.T) {
 	for i, table := range tables {
 		cell := &xlsx.Cell{}
 		cell.SetValue(table.cell)
-		tmpl := &Template{}
-		err := tmpl.applyData(cell, table.data)
+		err := applyData(cell, table.data)
 		if table.err == false && err != nil {
 			t.Error(err)
 			continue
@@ -96,7 +95,7 @@ func TestSimpleColRangeExpand(t *testing.T) {
 	defer teardown()
 
 	cells := [][]string{
-		[]string{"header 1", "header 2", "{{col_range .cols}}header 3", "header 4"},
+		[]string{"header 1", "header 2", "{{col_range .cols}}\nheader 3", "header 4"},
 		[]string{"", "static 1", "row1", "static 3"},
 		[]string{"", "static 2", "row2", "static 4"},
 	}
@@ -130,15 +129,14 @@ func TestSimpleColRangeExpand(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
 }
 
-func TestColRangeExpand(t *testing.T) {
+func TestColRangeExpandWithVariables(t *testing.T) {
 	setup()
 	defer teardown()
 
 	cells := [][]string{
-		[]string{"header 1", "header 2", "{{col_range .cols}}header 3", "header 4"},
+		[]string{"header 1", "header 2", "{{col_range .cols}}\nheader 3", "header 4"},
 		[]string{"", "static 1", "{{ .row1 }}", "static 3"},
 		[]string{"", "static 2", "{{ .row2 }}", "static 4"},
 	}
@@ -199,9 +197,9 @@ func TestSchipper(t *testing.T) {
 	data := map[string][]interface{}{
 		"offices": []interface{}{
 			map[string]interface{}{
-				"placeholder1":  "Value 1",
-				"placeholder2":  "Value 2",
-				"aangifte_jaar": 10.0,
+				"placeholder1":                                     "Value 1",
+				"placeholder2":                                     "Value 2",
+				"aangifte_jaar":                                    2016,
 				"office_id":                                        "TO",
 				"office_name":                                      "Tim_online",
 				"aangifte_naam":                                    "Test",
@@ -228,9 +226,9 @@ func TestSchipper(t *testing.T) {
 				"totaal_te_betalen":                                0.0,
 			},
 			map[string]interface{}{
-				"placeholder1":  "Value 1",
-				"placeholder2":  "Value 2",
-				"aangifte_jaar": 10.0,
+				"placeholder1":                                     "Value 1",
+				"placeholder2":                                     "Value 2",
+				"aangifte_jaar":                                    2015,
 				"office_id":                                        "TO",
 				"office_name":                                      "Tim_online",
 				"aangifte_naam":                                    "Test",
@@ -265,4 +263,11 @@ func TestSchipper(t *testing.T) {
 	}
 
 	file.Save("test.xlsx")
+}
+
+func saveSheet(sheet *xlsx.Sheet, path string) error {
+	f := &xlsx.File{
+		Sheets: []*xlsx.Sheet{sheet},
+	}
+	return f.Save(path)
 }

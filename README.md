@@ -1,5 +1,15 @@
 # Go XLSX template
 
+This package combines the go
+[`text/template`](https://golang.org/pkg/text/template/) with
+[`tealeg/xlsx`](https://github.com/tealeg/xlsx).
+
+The endresult is that you can use Go's template language to fill an XLSX
+documents with data.
+
+
+## Example
+
 ``` go
 package main
 
@@ -26,7 +36,3 @@ if err != nil {
 	panic(err)
 }
 ```
-
-## Test dependencies
-
-- https://github.com/tmc/watcher
